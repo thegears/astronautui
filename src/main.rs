@@ -51,7 +51,9 @@ impl App {
     }
 
     fn update(&mut self) -> Result<()> {
-        Command::new("nmcli device wifi rescan");
+        Command::new("nmcli")
+            .args(&["device", "wifi", "rescan"])
+            .output()?;
         let networks = Command::new("nmcli")
             .args(&["-t", "-f", "SSID,SIGNAL", "dev", "wifi"])
             .output()?
@@ -195,7 +197,7 @@ fn render(frame: &mut Frame, app: &mut App) {
                 frame.area().width / 4,
                 frame.area().height / 4,
                 frame.area().width / 2,
-                frame.area().height / 4,
+                9,
             ),
         )
     };
@@ -214,7 +216,7 @@ fn render(frame: &mut Frame, app: &mut App) {
                 frame.area().width / 4,
                 frame.area().height / 4,
                 frame.area().width / 2,
-                frame.area().height / 8,
+                3,
             ),
         )
     };
@@ -231,7 +233,7 @@ fn render(frame: &mut Frame, app: &mut App) {
                 frame.area().width / 4,
                 frame.area().height / 4,
                 frame.area().width / 2,
-                frame.area().height / 8,
+                3,
             ),
         )
     };
