@@ -183,6 +183,7 @@ fn render(frame: &mut Frame, app: &mut App) {
         "Press 'r' to rescan Wi-Fi networks.
         \nPress 'q' or 'Esc' to quit.
         \nUse Up/Down arrows to navigate.
+        \nPress Enter to connect.
         \nPress 'i' for this modal.",
     ))
     .block(Block::bordered().title("Instructions"))
