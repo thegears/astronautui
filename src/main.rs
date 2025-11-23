@@ -49,14 +49,30 @@ impl App {
     fn down(&mut self) {
         self.state.select_next();
     }
+
+    fn update(&mut self) -> Result<()> {
+        Command::new("nmcli device wifi rescan");
+        let networks = Command::new("nmcli")
+            .args(&["-t", "-f", "SSID,SIGNAL", "dev", "wifi"])
+            .output()?
+            .stdout;
+        let networks_str = String::from_utf8_lossy(&networks);
+
+        self.items = networks_str
+            .lines()
+            .filter(|line| !line.is_empty())
+            .map(|line| line.to_string())
+            .collect();
+        Ok(())
+    }
 }
 
 fn run(mut terminal: DefaultTerminal) -> Result<()> {
-    let mut networks = Command::new("nmcli")
+    let networks = Command::new("nmcli")
         .args(&["-t", "-f", "SSID,SIGNAL", "dev", "wifi"])
         .output()?
         .stdout;
-    let mut networks_str = String::from_utf8_lossy(&networks);
+    let networks_str = String::from_utf8_lossy(&networks);
 
     let mut app = App::new(
         networks_str
@@ -125,18 +141,7 @@ fn run(mut terminal: DefaultTerminal) -> Result<()> {
                 event::KeyCode::Char('q') | event::KeyCode::Esc => break Ok(()),
                 event::KeyCode::Char('r') => {
                     terminal.clear()?;
-                    Command::new("nmcli device wifi rescan");
-                    networks = Command::new("nmcli")
-                        .args(&["-t", "-f", "SSID,SIGNAL", "dev", "wifi"])
-                        .output()?
-                        .stdout;
-                    networks_str = String::from_utf8_lossy(&networks);
-
-                    app.items = networks_str
-                        .lines()
-                        .filter(|line| !line.is_empty())
-                        .map(|line| line.to_string())
-                        .collect();
+                    app.update()?;
                 }
 
                 event::KeyCode::Char('i') => {
